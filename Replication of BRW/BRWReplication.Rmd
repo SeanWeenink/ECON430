@@ -1,0 +1,107 @@
+---
+title: "BRW Replication"
+author: "Sean Weenink"
+date: "08/07/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r, echo= FALSE, include=FALSE}
+setwd('C:/Users/seanw/Dropbox/ECON430SeanWeenink/R/Replication of BRW')
+
+
+# Define required packages
+packages <- c("bannerCommenter", "gridExtra", "ggpubr", "readxl", "lpirfs", "dplyr", "fredr", "tidyr", "splines", "sandwich", "lmtest", "Matrix")
+# Install packages and load libraries
+install.packages(setdiff(packages, rownames(installed.packages()))) 
+lapply(packages, require, character.only = TRUE)
+```
+
+```{r}
+# Getting data from FRED:
+StartDate = as.Date("1994-01-01") # Start date of the BRW shock series
+EndDate = as.Date("2017-12-12") # End date of the BRW shock series\
+fredr_set_key("2bf2ff8f666611f4f30b27f3feca9a38")
+# Additional series can be added here
+FREDCodes <- c("CPIAUCSL", "INDPRO")
+FREDData <- as.data.frame(lapply(FREDCodes, fredr, observation_start = StartDate ,observation_end = EndDate ))
+
+FREDData <- FREDData %>% 
+  dplyr::select("date", "value", "value.1")
+colnames(FREDData) <- c("date", "CPI", "IndProd")
+FREDData$date <- as.Date(FREDData$date)
+
+# Add logs 
+FREDData <- FREDData %>% 
+  mutate(logCPI = log(CPI),
+         logIndProd = log(IndProd)
+         )
+```
+## Specifications of BRW IRFS
+- Data: log CPI and log Industrial production
+- Dates: 1994:01-2017:12
+- Lags: 12
+- CI: bootstrapping 1000 times*
+- Impulse response to 100 points increase in BRW (contractionary)
+
+
+
+### Importing the BRW shock data
+```{r}
+BRWShocks <- read.csv('./ShocksData/brw-shock-series.csv')
+BRWShocks <- BRWShocks %>% 
+  filter(month < "2018m1") %>% 
+  dplyr::select("month", "BRW_monthly", "BRW_c") 
+BRWShocks <- as.data.frame(BRWShocks)
+BRWShocks <- na.omit(BRWShocks)
+```
+
+### Plot CPI and INDProd
+Can this help me see what trend to use?/should trend matter for LP?
+```{r}
+ggplot(data = FREDData, aes(x = date, y = CPI)) +
+  geom_point()
+
+ggplot(data = FREDData, aes(x = date, y = IndProd)) +
+  geom_point()
+```
+
+
+#
+```{r}
+IRF <- function(endog_data, shock, trend){
+  # Endogenous data
+  endog_data <- as.data.frame(endog_data)
+  # Shock variable
+  shock <- as.data.frame(shock)
+  # Estimate linear model
+  results_lin_iv <- lp_lin_iv(endog_data = endog_data, lags_endog_lin = 12,
+                              shock = shock, trend = trend,
+                              confint = 1.96, hor = 30)
+  # Make and save linear plots
+  
+  iv_lin_plots <- plot.lpirfs_lin_iv_obj(results_lin_iv)
+  iv_lin_plots
+}
+```
+
+
+### IRFS using different trends (attempting to replicate those in BRW)
+```{r}
+# CPI with trend = 1
+IRF(FREDData$CPI,BRWShocks$BRW_monthly, 1)
+
+# CPI with trend = 2
+IRF(FREDData$CPI,BRWShocks$BRW_monthly, 2)
+
+
+# IndProd with trend = 1
+IRF(FREDData$IndProd,BRWShocks$BRW_monthly, 1)
+
+# IndProd with trend = 2
+IRF(FREDData$IndProd,BRWShocks$BRW_monthly, 2)
+
+```

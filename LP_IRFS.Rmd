@@ -1,0 +1,120 @@
+---
+title: "LP_IRFs"
+author: "Sean Weenink"
+date: "20/05/2021"
+output:
+  pdf_document: default
+  html_document: default
+---
+```{r}
+setwd("C:\\Users\\seanw\\OneDrive\\Documents\\2021\\ECON430\\R Code")
+
+library(gridExtra)
+library(ggpubr)
+library(gridExtra)
+library(ggpubr)
+library(readxl)
+library(lpirfs)
+library(dplyr)
+
+
+```
+
+
+
+
+
+
+
+```{r}
+# Importing the data ------------------------------------------------------
+
+
+data <- read_excel("EMPLY_BRW.xlsx")
+
+colnames(data) <- c("Employment Rate", "BRW_Monthly")
+
+
+test <- data.frame(seq(from = as.Date("1994-02-04"), to = as.Date("2019-09-04"), by = 'month'))
+
+# Add a month column
+data <- data %>% 
+  mutate(Date = seq(from = as.Date("1994-02-04"), to = as.Date("2019-09-04"), by = 'month') )
+
+
+# Display BRW -------------------------------------------------------------
+
+BRW_graph <- ggplot(data = data, aes(Date, BRW_Monthly))+
+  geom_line()
+
+BRW_graph
+
+EMPLY_graph <- ggplot(data = data, aes(Date, `Employment Rate`)) +
+  geom_line()
+
+EMPLY_graph
+```
+
+
+```{r}
+# Define a lp function based on this data ---------------------------------
+
+
+brw_lp <- function(data){
+  # Endogenous data
+  endog_data <- data[,1]
+  # Shock variable
+  shock <- data[,2]
+  # Estimate linear model
+  
+  # Using AIC to find the optimal lags. 
+  results_lin_iv <- lp_lin_iv(endog_data = endog_data, lags_endog_lin = NaN, lags_criterion = 'AIC',
+                              shock = -shock, trend = 0, max_lags = 20,
+                              confint = 1.96, hor = 16)
+  
+  # Make and save linear plots
+  iv_lin_plots <- plot_lin(results_lin_iv)
+  
+  iv_lin_plots  
+}
+```
+
+```{r}
+# Full data range LP ------------------------------------------------------
+
+brw_lp(data)
+
+```
+This seems to make sense. A positive BRW shock represent contractionary monetary policy. Lowering employment. 
+
+
+
+```{r}
+# Pre-GFC -----------------------------------------------------------------
+# DAte of GFC set a Lehman Brother bankruptcy 
+
+Pre_GFC <- data %>% 
+  filter(Date < "2008-09-15")
+
+brw_lp(Pre_GFC)
+
+### ???
+```
+Less sure what is happening here
+
+```{r}
+# Post-GFC ----------------------------------------------------------------
+# Post GFC set one year later
+
+Pose_GFC <- data %>% 
+  filter(Date > "2009-09-15")
+
+
+brw_lp(Pre_GFC)
+
+```
+Also less sure
+
+
+
+
