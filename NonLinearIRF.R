@@ -8,7 +8,7 @@
 ###########################################################################
 # Helpful code for generating banner comments
 # banner("Section 1:", "Data input and initialization", emph = TRUE)
-asdfasdf
+asdfasdfasdfasfdasdf
 setwd('C:/Users/seanw/Dropbox/ECON430SeanWeenink/R')
 
 # Define required packages
