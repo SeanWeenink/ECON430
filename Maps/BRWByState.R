@@ -85,7 +85,7 @@ IRFMax <- function(endog_data, shock, trend, conf){
   max
 }
 
-IRFMax(FREDData[1],BRWShocks$BRW_monthly, 1, 1.96)
+#IRFMax(FREDData[1],BRWShocks$BRW_monthly, 1, 1.96)
 
 
 colnames <- colnames(FREDData)
@@ -101,6 +101,8 @@ for(i in 1:(ncol(FREDData)-1)){ # -1 to not include the date column
 }
 
 test <- test[-1,]
+
+
 
 
 colnames(test) <- c("NAME", "max")

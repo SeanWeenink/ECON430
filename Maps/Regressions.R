@@ -1,4 +1,4 @@
-setwd('C:/Users/seanw/Dropbox/ECON430SeanWeenink/R')
+setwd('C:/Users/seanw/Dropbox/ECON430SeanWeenink/R/ECON430')
 
 
 library("XML")

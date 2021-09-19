@@ -9,7 +9,7 @@
 # Helpful code for generating banner comments
 # banner("Section 1:", "Data inpsdafasdut and initialization", emph = TRUE)
 
-setwd('C:/Users/seanw/Dropbox/ECON430SeanWeenink/R/ECON430_Effect_of_Monetary_Policy_on_Employment')
+setwd('C:/Users/seanw/Dropbox/ECON430SeanWeenink/R/ECON430')
 
 # Define required packages
 packages <- c("bannerCommenter", "rlang", "gridExtra", "ggpubr", "readxl", "lpirfs", "dplyr", "fredr", "tidyr", "tidyverse", "zoo", "forecast")
@@ -22,7 +22,7 @@ StartDate = as.Date("1994-01-01") # Start date of the BRW shock series
 EndDate = as.Date("2019-09-01") # End date of the BRW shock series\
 fredr_set_key("2bf2ff8f666611f4f30b27f3feca9a38")
 # Additional series can be added here
-FREDCodes <- c("INDPRO", "EMRATIO", "UNRATE", "LNS12300060", "CPIAUCSL",  "PPIACO", "GS1")
+FREDCodes <- c("INDPRO", "EMRATIO", "UNRATE", "LNS12300012", "CPIAUCSL",  "PPIACO", "GS1")
 # INDPRO: Industrial Production: Total Index (Index, Monthly, Seasonally Adjusted)
 # EMPRATE: Employment Rate: Aged 15-64: All Persons for the United States (Percent, Monthly, Seasonally Adjusted)
 # UNRATE: Unemployment Rate (Percent, Monthly, Seasonally Adjusted)
@@ -32,7 +32,7 @@ FREDCodes <- c("INDPRO", "EMRATIO", "UNRATE", "LNS12300060", "CPIAUCSL",  "PPIAC
 FREDData <- as.data.frame(lapply(FREDCodes, fredr, observation_start = StartDate ,observation_end = EndDate ))
 FREDData <- FREDData %>% 
   dplyr::select("date", "value", "value.1", "value.2", "value.3", "value.4", "value.5", "value.6")
-colnames(FREDData) <- c("Date", "INDPRO", "EMRATIO", "Youth", "UNRATE", "CPIAUCSL",  "PPIACO", "GS1")
+colnames(FREDData) <- c("Date", "INDPRO", "EMRATIO", "UNRate", "Youth", "CPIAUCSL",  "PPIACO", "GS1")
 
 # Importing the BRW shock data
 BRWShocks <- read.csv('./ShocksData/brw-shock-series.csv')
@@ -40,10 +40,8 @@ BRWShocks <- BRWShocks %>%
   dplyr::select("month", "BRW_monthly")
 BRWShocks <- as.data.frame(BRWShocks)
 BRWShocks <- na.omit(BRWShocks)
-# Make a 100 basis point shock 
 
-BRWShocks <- BRWShocks %>% 
-  mutate(stdShock = BRW_monthly/sd(BRW_monthly))
+
 
 ###########################################################################
 ###########################################################################
@@ -70,34 +68,31 @@ iv_lin_plots
 }
 
 
-# Working to include the plotting in a function
-
 # BRW EMRATIO
-png('./Output/BRW_EMRATIOStdShock.png')
-IRF(FREDData$EMRATIO,BRWShocks$stdShock)
-dev.off()  
+#png('./Output/BRW_EMRATIOStdShock.png')
+#IRF(FREDData$EMRATIO,BRWShocks$stdShock)
+#dev.off()  
 
-png('./Output/BRW_INDPRO.png')
-IRF(FREDData$INDPRO,BRWShocks$BRW_monthly)
-dev.off()  
+#png('./Output/BRW_INDPRO.png')
+#IRF(FREDData$INDPRO,BRWShocks$BRW_monthly)
+#dev.off()  
 
-png('./Output/BRW_UNRATE.png')
-IRF(FREDData$UNRATE,BRWShocks$BRW_monthly)
-dev.off()  
+#png('./Output/BRW_UNRATE.png')
+#IRF(FREDData$UNRATE,BRWShocks$BRW_monthly)
+#dev.off()  
 
-png('./Output/BRW_CPIAUCSL.png')
-IRF(FREDData$CPIAUCSL,BRWShocks$BRW_monthly)
-dev.off()  
+#png('./Output/BRW_CPIAUCSL.png')
+#IRF(FREDData$CPIAUCSL,BRWShocks$BRW_monthly)
+#dev.off()  
 
-png('./Output/BRW_PPIACO.png')
-IRF(FREDData$PPIACO,BRWShocks$BRW_monthly)
+#png('./Output/BRW_PPIACO.png')
+#IRF(FREDData$PPIACO,BRWShocks$BRW_monthly)
+#dev.off()
+
+
+png('./Output/BRW_Youth.png')
+IRF(FREDData$Youth,BRWShocks$BRW_monthly)
 dev.off()
-
-
-# sfdgdsfgfds
-
-IRF(FREDData$Youth,BRWShocks$stdShock)
-
 
 
 

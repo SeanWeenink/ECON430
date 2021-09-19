@@ -8,8 +8,7 @@
 ###########################################################################
 # Helpful code for generating banner comments
 # banner("Section 1:", "Data input and initialization", emph = TRUE)
-asdfasdfasdfasfdasdf
-setwd('C:/Users/seanw/Dropbox/ECON430SeanWeenink/R')
+setwd('C:/Users/seanw/Dropbox/ECON430SeanWeenink/R/ECON430')
 
 # Define required packages
 packages <- c("bannerCommenter", "rlang", "gridExtra", "ggpubr", "readxl", "lpirfs", "dplyr", "fredr", "tidyr", "tidyverse", "zoo", "forecast")
@@ -193,6 +192,60 @@ Proxy <- Proxy %>%
     Date > as.Date("1993-12-01"),
     Date < as.Date("2019-10-01")
   )
+
+### Graph proxy variable
+#png('./Output/GrowthRateMACPI.png')
+ggplot(Proxy, aes(x=Date, y=MA_CPI))+
+  geom_line(size=0.8) +
+  theme_minimal() +
+  ylab("CPI Growth Rate 7 Month MA") +
+  scale_x_date(date_breaks = "24 month", date_labels =  "%Y") 
+#dev.off()
+
+#png('./Output/GrowthRateMAINDPRO.png')
+ggplot(Proxy, aes(x=Date, y=MA_INDPRO))+
+  geom_line(size=0.8) +
+  theme_minimal() +
+  ylab("INDPRO Growth Rate 7 Month MA") +
+  scale_x_date(date_breaks = "24 month", date_labels =  "%Y") 
+#dev.off()
+
+
+
+CPI_Plot <- ggplot(Proxy, aes(x=Date, y=MA_CPI))+
+  geom_line(size=0.8) +
+  theme_minimal() +
+  ylab("CPI Growth Rate 7 Month MA") +
+  scale_x_date(date_breaks = "24 month", date_labels =  "%Y") 
+
+
+
+INDPRO_Plot <- ggplot(Proxy, aes(x=Date, y=MA_INDPRO))+
+  geom_line(size=0.8) +
+  theme_minimal() +
+  ylab("INDPRO Growth Rate 7 Month MA") +
+  scale_x_date(date_breaks = "24 month", date_labels =  "%Y") 
+
+
+figure <- ggarrange(CPI_Plot, INDPRO_Plot,
+                    ncol = 1, nrow = 2)
+
+png('./Output/GrowthRates.png')
+figure
+dev.off()
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
