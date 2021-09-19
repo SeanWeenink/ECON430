@@ -7,7 +7,7 @@
 ###########################################################################
 ###########################################################################
 
-setwd('C:/Users/seanw/Dropbox/ECON430SeanWeenink/R/Maps')
+setwd('C:/Users/seanw/Dropbox/ECON430SeanWeenink/R/ECON430/Maps')
 
 # Define required packages
 packages <- c("bannerCommenter", "gridExtra", "ggpubr", "readxl", "lpirfs", "dplyr", "fredr", "tidyr", "splines", "sandwich", "lmtest", "Matrix")

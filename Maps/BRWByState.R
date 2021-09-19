@@ -6,7 +6,7 @@
 ###                                                                     ###
 ###########################################################################
 ###########################################################################
-setwd('C:/Users/seanw/Dropbox/ECON430SeanWeenink/R/Maps')
+setwd('C:/Users/seanw/Dropbox/ECON430SeanWeenink/R/ECON430/Maps')
 
 
 # Importing the BRW shock data
@@ -47,16 +47,19 @@ IRFGraph <- function(endog_data, shock, trend, conf){
     geom_line()+
     geom_point(aes(x=month, y=mean)) + # points for each month 
     scale_x_continuous(name = "Months since shock", breaks=seq(1:30)) +
-    scale_y_continuous(name = "% change in unemployment")
+    scale_y_continuous(name = "% change in unemployment") +
+    theme_minimal() +
+    geom_hline(yintercept=0, linetype="dashed", color="red", size=1)
+  
 }
 # Creating and saving the IRF graphs for each state
 # create a vector of column names for reference in the for loop
 colnames <- colnames(FREDData)
-for(i in 1:ncol(FREDData)-1){ # -1 to not include the date column
+for(i in 2:ncol(FREDData)-1){ # -1 to not include the date column
   print(i)  # printing i as a check
   CSVFileName <- paste("./Output/",colnames[i],".png",sep="") # This names the the saved file for each state
-  print(IRFGraph(FREDData[i],BRWShocks$BRW_monthly, 1, 1.96))# to save the file it needs to display in the plot viewer. print() does this within a for loop or function
   png(CSVFileName)
+  print(IRFGraph(FREDData[i],BRWShocks$BRW_monthly, 1, 1.96))# to save the file it needs to display in the plot viewer. print() does this within a for loop or function
   dev.off() 
 }
 
